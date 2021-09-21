@@ -1,6 +1,6 @@
 {
   "name": "bind-easy",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Easily create UDP sockets and TCP servers that bind to ports",
   "main": "index.js",
   "scripts": {
