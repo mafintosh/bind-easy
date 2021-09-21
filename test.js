@@ -66,7 +66,7 @@ test('dual - tcp is taken', async function (t) {
   const { server, socket } = await bind.dual(exiting.address().port)
 
   t.is(server.address().port, socket.address().port)
-  t.ok(server.address().port !== exiting.address().port, 'different port')
+  t.not(server.address().port, exiting.address().port, 'different port')
 
   server.close()
   socket.close()
@@ -78,7 +78,7 @@ test('dual - udp is taken', async function (t) {
   const { server, socket } = await bind.dual(exiting.address().port)
 
   t.is(server.address().port, socket.address().port)
-  t.ok(server.address().port !== exiting.address().port, 'different port')
+  t.not(server.address().port, exiting.address().port, 'different port')
 
   server.close()
   socket.close()
