@@ -2,11 +2,12 @@ const dgram = require('dgram')
 const net = require('net')
 
 exports.udp = async function bindUDP (ports = 0, opts = {}) {
+  const allowAny = opts.allowAny !== false
   const socket = dgram.createSocket(opts.ipv6 ? 'udp6' : 'udp4')
 
   let error = null
 
-  for (const port of expandPorts(ports, opts.allowAny !== false)) {
+  for (const port of expandPorts(ports, allowAny, allowAny)) {
     try {
       await bind(socket, false, port)
       return socket
@@ -19,11 +20,12 @@ exports.udp = async function bindUDP (ports = 0, opts = {}) {
 }
 
 exports.tcp = async function bindTCP (ports = 0, opts = {}) {
+  const allowAny = opts.allowAny !== false
   const server = net.createServer()
 
   let error = null
 
-  for (const port of expandPorts(ports, opts.allowAny !== false)) {
+  for (const port of expandPorts(ports, allowAny, allowAny)) {
     try {
       await bind(server, true, port)
       return server
@@ -36,13 +38,14 @@ exports.tcp = async function bindTCP (ports = 0, opts = {}) {
 }
 
 exports.dual = async function bindDual (ports = 0, opts = {}) {
+  const allowAny = opts.allowAny !== false
   const type = opts.ipv6 ? 'udp6' : 'udp4'
 
   let server = net.createServer()
   let socket = dgram.createSocket(type)
   let error = null
 
-  for (const port of expandPorts(ports, false)) {
+  for (const port of expandPorts(ports, allowAny, false)) {
     try {
       await bind(socket, false, port)
     } catch (err) {
@@ -62,7 +65,7 @@ exports.dual = async function bindDual (ports = 0, opts = {}) {
     return { server, socket }
   }
 
-  if (opts.allowAny !== false) {
+  if (allowAny) {
     for (let i = 0; i < 5; i++) {
       // First try free udp port
       await bind(socket, false, 0)
@@ -94,11 +97,11 @@ exports.dual = async function bindDual (ports = 0, opts = {}) {
   throw (error || new Error('Could not bind'))
 }
 
-function expandPorts (p, allowAny) {
+function expandPorts (p, expand, allowAny) {
   const all = p === 0
     ? allowAny ? [] : [0]
     : typeof p === 'number'
-      ? allowAny ? [p, p + 1, p + 2, p + 3, p + 4] : [p]
+      ? expand ? [p, p + 1, p + 2, p + 3, p + 4] : [p]
       : [...p]
 
   if (allowAny) all.push(0)
