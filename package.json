@@ -1,0 +1,24 @@
+{
+  "name": "bind-easy",
+  "version": "0.0.0",
+  "description": "Easily create UDP sockets and TCP servers that bind to ports",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard && node test.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "brittle": "^1.0.0",
+    "standard": "^16.0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mafintosh/bind-easy.git"
+  },
+  "author": "Mathias Buus (@mafintosh)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mafintosh/bind-easy/issues"
+  },
+  "homepage": "https://github.com/mafintosh/bind-easy"
+}
