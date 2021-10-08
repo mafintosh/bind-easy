@@ -85,6 +85,15 @@ test('dual - udp is taken', async function (t) {
   exiting.close()
 })
 
+test('dual - range taken but allowAny', async function (t) {
+  const { server, socket } = await bind.dual([])
+
+  t.is(server.address().port, socket.address().port)
+
+  server.close()
+  socket.close()
+})
+
 test('all taken, no allowAny', async function (t) {
   t.exception(bind.udp([], { allowAny: false }))
   t.exception(bind.tcp([], { allowAny: false }))
