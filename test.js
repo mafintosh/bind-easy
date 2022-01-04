@@ -94,6 +94,18 @@ test('dual - range taken but allowAny', async function (t) {
   socket.close()
 })
 
+test('dual - with address', async function (t) {
+  const { server, socket } = await bind.dual(0, { address: '127.0.0.1' })
+
+  t.is(server.address().port, socket.address().port)
+  t.is(server.address().address, socket.address().address)
+  t.ok(server.address().port > 0, 'is bound')
+  t.is(server.address().address, '127.0.0.1')
+
+  server.close()
+  socket.close()
+})
+
 test('all taken, no allowAny', async function (t) {
   t.exception(bind.udp([], { allowAny: false }))
   t.exception(bind.tcp([], { allowAny: false }))
