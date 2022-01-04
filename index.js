@@ -3,13 +3,14 @@ const net = require('net')
 
 exports.udp = async function bindUDP (ports = 0, opts = {}) {
   const allowAny = opts.allowAny !== false
+  const address = opts.address || ''
   const socket = dgram.createSocket(opts.ipv6 ? 'udp6' : 'udp4')
 
   let error = null
 
   for (const port of expandPorts(ports, allowAny, allowAny)) {
     try {
-      await bind(socket, false, port)
+      await bind(socket, false, port, address)
       return socket
     } catch (err) {
       error = err
@@ -21,13 +22,14 @@ exports.udp = async function bindUDP (ports = 0, opts = {}) {
 
 exports.tcp = async function bindTCP (ports = 0, opts = {}) {
   const allowAny = opts.allowAny !== false
+  const address = opts.address || ''
   const server = net.createServer()
 
   let error = null
 
   for (const port of expandPorts(ports, allowAny, allowAny)) {
     try {
-      await bind(server, true, port)
+      await bind(server, true, port, address)
       return server
     } catch (err) {
       error = err
@@ -39,6 +41,7 @@ exports.tcp = async function bindTCP (ports = 0, opts = {}) {
 
 exports.dual = async function bindDual (ports = 0, opts = {}) {
   const allowAny = opts.allowAny !== false
+  const address = opts.address || ''
   const type = opts.ipv6 ? 'udp6' : 'udp4'
 
   let server = net.createServer()
@@ -47,14 +50,14 @@ exports.dual = async function bindDual (ports = 0, opts = {}) {
 
   for (const port of expandPorts(ports, allowAny, false)) {
     try {
-      await bind(socket, false, port)
+      await bind(socket, false, port, address)
     } catch (err) {
       error = err
       continue
     }
 
     try {
-      await bind(server, true, socket.address().port)
+      await bind(server, true, socket.address().port, address)
     } catch (err) {
       error = err
       await close(socket)
@@ -68,10 +71,10 @@ exports.dual = async function bindDual (ports = 0, opts = {}) {
   if (allowAny) {
     for (let i = 0; i < 5; i++) {
       // First try free udp port
-      await bind(socket, false, 0)
+      await bind(socket, false, 0, address)
 
       try {
-        await bind(server, true, socket.address().port)
+        await bind(server, true, socket.address().port, address)
       } catch (err) {
         error = err
         await close(socket)
@@ -81,7 +84,7 @@ exports.dual = async function bindDual (ports = 0, opts = {}) {
         await bind(server, true, 0)
 
         try {
-          await bind(socket, false, server.address().port)
+          await bind(socket, false, server.address().port, address)
         } catch (err) {
           error = err
           await close(server)
@@ -120,13 +123,13 @@ function close (server) {
   })
 }
 
-function bind (socket, isTCP, port) {
+function bind (socket, isTCP, port, address) {
   return new Promise(function (resolve, reject) {
     socket.on('listening', onlistening)
     socket.on('error', done)
 
-    if (isTCP) socket.listen(port)
-    else socket.bind(port)
+    if (isTCP) socket.listen(port, address)
+    else socket.bind(port, address)
 
     function onlistening () {
       done(null)
