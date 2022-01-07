@@ -20,11 +20,14 @@ const server = await bind.tcp(8080)
 // try binding to a range of ports, fallback to any
 const server = await bind.tcp([8080, 8081, 8082])
 
-// try binding to a range of ports, fallback to any
-const server = await bind.tcp([8080, 8081, 8082])
-
 // try binding to a range of ports, fail if that cannot be done
 const server = await bind.tcp([8080, 8081, 8082], { allowAny: false })
+
+// try binding to a specific port and address, fallback to any port
+const server = await bind.tcp(8080, { address: '127.0.0.1' })
+
+// try binding to a specific port and address, fail if that cannot be done
+const server = await bind.tcp(8080, { address: '0.0.0.0', allowAny: false })
 
 // The same API applies for udp and dual mode
 
@@ -37,7 +40,7 @@ const { server, socket } = await bind.dual(8080)
 
 ## API
 
-#### `server = await bind.tcp([ports], [{ allowAny }])`
+#### `server = await bind.tcp([ports], [{ address, allowAny }])`
 
 Bind a TCP server. Pass a range of ports to try.
 
