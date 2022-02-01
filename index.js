@@ -23,7 +23,8 @@ exports.udp = async function bindUDP (ports = 0, opts = {}) {
 exports.tcp = async function bindTCP (ports = 0, opts = {}) {
   const allowAny = opts.allowAny !== false
   const address = opts.address || ''
-  const server = net.createServer({ allowHalfOpen: !!opts.allowHalfOpen })
+  const allowHalfOpen = !!opts.allowHalfOpen
+  const server = net.createServer({ allowHalfOpen })
 
   let error = null
 
@@ -43,8 +44,9 @@ exports.dual = async function bindDual (ports = 0, opts = {}) {
   const allowAny = opts.allowAny !== false
   const address = opts.address || ''
   const type = opts.ipv6 ? 'udp6' : 'udp4'
+  const allowHalfOpen = !!opts.allowHalfOpen
 
-  let server = net.createServer({ allowHalfOpen: !!opts.allowHalfOpen })
+  let server = net.createServer({ allowHalfOpen })
   let socket = dgram.createSocket(type)
   let error = null
 
@@ -88,7 +90,7 @@ exports.dual = async function bindDual (ports = 0, opts = {}) {
         } catch (err) {
           error = err
           await close(server)
-          server = net.createServer()
+          server = net.createServer({ allowHalfOpen })
           continue
         }
       }
